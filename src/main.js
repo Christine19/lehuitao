@@ -4,11 +4,21 @@ import App from './App.vue'
 import VueRouter from 'vue-router'
 // 引入首页组件
 import index from './component/index.vue'
+// 引入ui框架需要的模块
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+// 使用ui中间件
+Vue.use(ElementUI);
+
 // 使用路由中间件
 Vue.use(VueRouter);
 // 实例化
 const router = new VueRouter({
-  routes:[{
+  routes:[
+    {
+      path:'/',
+      component:index
+    },{
     path:'/index',
     component:index
   }]
@@ -19,6 +29,6 @@ Vue.config.productionTip = false
 
 new Vue({
   el:"#app",
-  router,
- render: h=>h(App)
+  render:h=>h(App),
+  router
 })
