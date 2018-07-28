@@ -79,7 +79,10 @@
                 <div class="wrap-box">
                     <ul class="img-list">
                         <li v-for="(itemSon, index) in item.datas" :key="itemSon.artID">
-                            <a href="#/site/goodsinfo/87" class="">
+                            <!-- <router-link :to=`/goodInfo/${itemSon.artID}`> -->
+                            <!-- 动态传递的数据,要用冒号来动态绑定,这里地址不是写死的,地址是随着
+                            id的改变,而改变的,-->
+                            <router-link :to="'/goodsInfo/'+itemSon.artID">
                                 <div class="img-box">
                                     <img v-lazy="itemSon.img_url">
                                 </div>
@@ -94,7 +97,7 @@
                                         </span>
                                     </p>
                                 </div>
-                            </a>
+                         </router-link>
                         </li>
                         </ul>
                 </div>
@@ -104,10 +107,9 @@
     </div>
 </template>
 <script>
-// 引入模块
-import axios from "axios";
-// 引入管理时间的库
-import moment from "moment";
+
+// // 引入管理时间的库
+// import moment from "moment";
 
 export default {
     data: function() {
@@ -120,8 +122,8 @@ export default {
     },
   beforeMount() {
     //   渲染上面的数据
-    axios
-      .get("http://47.106.148.205:8899/site/goods/gettopdata/goods")
+    this.axios
+      .get("/site/goods/gettopdata/goods")
       .then((response) => {
         //   console.log(response);
           this.catelist=response.data.message.catelist;
@@ -132,7 +134,7 @@ export default {
         console.log(error);
       });
     //   渲染下面商品列表的数据
-    axios.get("http://47.106.148.205:8899/site/goods/getgoodsgroup")
+    this.axios.get("/site/goods/getgoodsgroup")
     .then((response)=>{
         console.log(response);
         this.goodList=response.data.message;
@@ -141,12 +143,12 @@ export default {
         console.log(error);
     })
   },
-  filters:{
-      cutTime(value){
-        //   return value.slice(0,10)
-        return moment(value).format("YYYY-MM-DD");
-      }
-  },
+//   filters:{
+//       cutTime(value){
+//         //   return value.slice(0,10)
+//         return moment(value).format("YYYY-MM-DD");
+//       }
+//   },
   mounted(){
 
   }
