@@ -82,8 +82,7 @@
                                     </td>
                                     <td width="84" align="left">{{item.sell_price}}</td>
                                     <td width="104" align="center">
-                                        <!-- <el-input-number v-model="item.buycount" @change="changeCount($event,index)" size="mini" :min="1" :max="10" label="描述文字"></el-input-number> -->
-                                        <cartnumber @change="change($event,index)" :count="item.buycount" :max="10" :min="1"></cartnumber>
+                                        <el-input-number v-model="item.buycount" @change="changeCount($event,index)" size="mini" :min="1" :max="10" label="描述文字"></el-input-number>
                                     </td>
                                     <td width="104" align="left">{{item.buycount*item.sell_price}}</td>
                                     <td width="54" align="center">
@@ -139,8 +138,6 @@
 </div>
 </template>
 <script>
-//使用自己的组件,需要先引入
-import cartnumber from "./cartnumber.vue";
 export default {
     name:"buycar",
     data:function(){
@@ -207,37 +204,23 @@ export default {
         }
     },
     methods:{
-        // changeCount(count,index){
-        //     //先修改当前这个组件中的数据
-        //     this.message[index].buycount=count;
-        //     //修改保存在vuex中的数据
-        //     this.$store.commit("updategoods",{
-        //         goodId:this.message[index].id,
-        //         goodNum:count
-        //     })
-        // },
+        changeCount(count,index){
+            //先修改当前这个组件中的数据
+            this.message[index].buycount=count;
+            //修改保存在vuex中的数据
+            this.$store.commit("updategoods",{
+                goodId:this.message[index].id,
+                goodNum:count
+            })
+        },
         del(){
             this.$store.commit("delgoodById",this.message[this.delIndex].id);
              // 获取当前这条数据的 index 删除当前这个组件中的 这一条数据
              this.message.splice(this.delIndex, 1);
              // 修改标示变量
             this.showModal = false;
-        },
-        // 改变
-    change(count,index){
-        // console.log('改变了');
-        // console.log(count,index);
-        // 修改当前这个组件中的数据
-        this.message[index].buycount = count;
-        // 修改保存在 Vuex中的数据
-        this.$store.commit('changeCount',{
-            goodId:this.message[index].id,
-            goodNum:count
-        })
+        }
     }
-    },
-    // 注册组件
-    components:{cartnumber}
 }
 </script>
 <style scoped>
