@@ -11,23 +11,24 @@
                     <a target="_blank" href="#"></a>
                 </div>
                 <div id="menu" class="right-box">
-                    <span style="display: none;">
-                        <a href="" class="">登录</a>
+                    <span v-if="$store.state.isLogin==false">
+                        <router-link to="/login">登录</router-link>
                         <strong>|</strong>
                         <a href="" class="">注册</a>
                         <strong>|</strong>
                     </span>
-                    <span>
+                    <span v-if="$store.state.isLogin==true">
                         <a href="" class="">会员中心</a>
                         <strong>|</strong>
-                        <a>退出</a>
+                        <a @click="logout">退出</a>
                         <strong>|</strong>
                     </span>
-                    <a href="" class="">
-                        <i class="iconfont icon-cart"></i>购物车(
+                    <router-link to="/cart">
+                    <i class="iconfont icon-cart"></i>购物车(
                         <span id="shoppingCartCount">
-                            <span>4</span>
-                        </span>)</a>
+                            <span>{{this.$store.getters.Count}}</span>
+                        </span>)
+                        </router-link>
                 </div>
             </div>
         </div>
@@ -137,6 +138,23 @@ export default {
 		$(".out",	this).stop().animate({'top':	'0px'},		300); // move up - show
 		$(".over",	this).stop().animate({'top':	'-48px'},	300); // move up - hide
 	});
+  },
+  methods:{
+    logout(){
+        this.axios.get("site/account/logout").then((response)=>{
+            console.log(response);
+            if(response.data.status==0){
+                this.$Message.success("欢迎再来");
+                //只告诉了浏览器我们退出了,但是没有告诉vuex;
+                // 修改vuex中的数据
+                this.$store.commit('changeLogin',false);
+                // 跳转到首页,因为订单支付页需要登录才能进;所以暂时跳到首页
+                this.$router.push('/index');
+            }
+        }).catch((err)=>{
+            console.log(err);
+        })
+    }
   }
   
 }
