@@ -105,9 +105,9 @@
                     <div class="cart-foot clearfix">
                         <div class="right-box">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <router-link to="/payOrder">
-                            <button class="submit">立即结算</button>
-                            </router-link>
+                            <!-- <router-link to="/payOrder"> -->
+                            <button class="submit" @click="toPayOrder">立即结算</button>
+                            <!-- </router-link> -->
                         </div>
                     </div>
                     <!--购物车底部-->
@@ -219,7 +219,32 @@ export default {
              this.message.splice(this.delIndex, 1);
              // 修改标示变量
             this.showModal = false;
+        },
+        // 点击跳转
+    toPayOrder(){
+        // 获取选中的id
+        let ids = '';
+        // 拼接为 id1,id2,id3....
+        this.message.forEach(v=>{
+            if(v.isSelected){
+                ids+=v.id;
+                ids+=','
+            }
+        })
+        if(ids==''){
+            // 一个都没选
+            this.$message({
+                message:'哥们,你起码选一个呀!!',
+                duration:1000
+            });
+            return;
         }
+        // 切掉,
+       ids = ids.slice(0,-1);
+        // 跳转地址
+        this.$router.push('/payOrder/'+ids);
+        
+    }
     }
 }
 </script>

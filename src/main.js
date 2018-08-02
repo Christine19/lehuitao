@@ -12,6 +12,8 @@ import cart from './component/cart';
 import payOrder from './component/payOrder';
 //引入登录页组件
 import login from './component/login.vue';
+//引入订单详细信息组件
+import order from './component/order';
 // 引入ui框架需要的模块
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -61,12 +63,16 @@ const router = new VueRouter({
     path:'/cart',
     component:cart
   },{
-    path:'/payOrder',
+    path:'/payOrder/:ids',
     component:payOrder
   },
   {
     path:'/login',
     component:login
+  },
+  {
+    path:'/order/:orderid',
+    component:order
   }]
 })
 // 判断数据是否存在
@@ -188,7 +194,23 @@ new Vue({
   // 挂载路由
   router,
   // 挂载仓库
-  store
+  store,
+   // 生命周期函数
+   //登录状态,本地存了一个,为了修改头部的显示,服务器存了一个,只要不关闭浏览器,登录状态都为登录
+   //刷新登录状态失效
+   //vuex里的islogin又变为初始值,
+   //存在local storage中,不可取,因为注册事件的时候,不仅仅是刷新的时候会触发,页面关闭的时候也会触发
+   //可能提交订单的时候显示登录,但是支付的时候提示没登录,是个隐患,
+   //打开页面之后去问服务器,我到底有没有登录,代码逻辑写在main.js里面
+   beforeCreate() {
+     axios.get('/site/account/islogin')
+     .then(response=>{
+      store.state.isLogin=response.data.code=="logined";
+     })
+     .catch(err=>{
+       console.log(err);
+     })
+   },
 })
 // 注册逻辑,让数据常驻
 // 在页面刷新和关闭之前,把数据存起来
