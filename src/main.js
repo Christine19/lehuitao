@@ -14,6 +14,10 @@ import payOrder from './component/payOrder';
 import login from './component/login.vue';
 //引入订单详细信息组件
 import order from './component/order';
+//引入支付成功组件
+import paysuccess from './component/paysuccess.vue';
+//引入会员中心组件
+import personalCenter from './component/personalCenter.vue';
 // 引入ui框架需要的模块
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -63,8 +67,10 @@ const router = new VueRouter({
     path:'/cart',
     component:cart
   },{
-    path:'/payOrder/:ids',
-    component:payOrder
+    path:'/payOrder/:ids',//路由定义中增加源信息meta,用来座位判断是否登录的语句
+    component:payOrder,
+    //路由源信息
+    meta:{checkLogin:true}
   },
   {
     path:'/login',
@@ -72,8 +78,22 @@ const router = new VueRouter({
   },
   {
     path:'/order/:orderid',
-    component:order
-  }]
+    component:order,
+     //路由源信息
+     meta:{checkLogin:true}
+  },
+  {
+    path:'/paysuccess',
+    component:paysuccess,
+     //路由源信息
+     meta:{checkLogin:true}
+  },
+  {
+    path:'/personalCenter',
+    component:personalCenter,
+     //路由源信息
+     meta:{checkLogin:true}
+  },]
 })
 // 判断数据是否存在
 let buylist=JSON.parse(window.localStorage.getItem('buylist'))||{};
@@ -96,7 +116,7 @@ const store = new Vuex.Store({
       for (const key in state.buylist) {
        num += parseInt(state.buylist[key]);
       }
-      console.log(num);
+      // console.log(num);
       return num;
     }
   },
@@ -126,7 +146,7 @@ const store = new Vuex.Store({
     updategoods(state,info){
       state.buylist[info.goodId]=info.goodNum;
     },
-    //根据id删(除数据
+    //根据id删除数据
     delgoodById(state,id){
       //坑点,需要告诉vue我们删除了这个属性,需要用vue的方法,不能用简单的对象的方法
       Vue.delete(state.buylist, id);
@@ -158,10 +178,13 @@ router.beforeEach((to, from, next) => {
   // 通过导航守卫的from.path 获取来时的路由
   store.commit('remfromPath',from.path);
   // 去订单支付页
-  if(to.path=="/payOrder"){
+  // if(to.path=="/payOrder"){
+    //路由 源信息进行判断,
+    //判断是否有需要登录判断的标记,有就执行登录判断的标记
+    if(to.meta.checkLogin){
   //判断是否登录
   axios.get("site/account/islogin").then((response)=>{
-    console.log(response);
+    // console.log(response);
     if(response.data.code=="nologin"){
         //未登录,去登录页;
         // this.$router.push('/login');
@@ -171,7 +194,7 @@ router.beforeEach((to, from, next) => {
         next();
     }
 }).catch((err)=>{
-    console.log(err);
+    // console.log(err);
 }) 
   }else{
     // 如果去的不是订单支付页,则可以继续访问
@@ -202,18 +225,21 @@ new Vue({
    //存在local storage中,不可取,因为注册事件的时候,不仅仅是刷新的时候会触发,页面关闭的时候也会触发
    //可能提交订单的时候显示登录,但是支付的时候提示没登录,是个隐患,
    //打开页面之后去问服务器,我到底有没有登录,代码逻辑写在main.js里面
+   //但是main.js是项目的打包入口函数,不能写太多逻辑,所以我们可以在vue的根实例的生命周期函数中
+   //调用接口问服务器是否登录;如果登录了就把vuex里的islogin里的值改为true
    beforeCreate() {
      axios.get('/site/account/islogin')
      .then(response=>{
       store.state.isLogin=response.data.code=="logined";
      })
      .catch(err=>{
-       console.log(err);
+      //  console.log(err);
      })
    },
 })
 // 注册逻辑,让数据常驻
 // 在页面刷新和关闭之前,把数据存起来
+//页面刷新和关闭之前的函数都是window.onbeforeunload
 window.onbeforeunload=function(){
   window.localStorage.setItem('buylist',JSON.stringify(store.state.buylist));
 }
