@@ -18,6 +18,10 @@ import order from './component/order';
 import paysuccess from './component/paysuccess.vue';
 //引入会员中心组件
 import personalCenter from './component/personalCenter.vue';
+//引入我的订单列表详情组件
+import orderList from './component/orderList.vue';
+//引入我的订单详情组件
+import myorderInfo from './component/myorderInfo.vue';
 // 引入ui框架需要的模块
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
@@ -93,7 +97,19 @@ const router = new VueRouter({
     component:personalCenter,
      //路由源信息
      meta:{checkLogin:true}
-  },]
+  },
+  {
+    path:'/orderList',
+    component:orderList,
+     //路由源信息
+     meta:{checkLogin:true}
+  },
+  {
+    path:'/myorderInfo/:orderId',
+    component:myorderInfo,
+     //路由源信息
+     meta:{checkLogin:true}
+  }]
 })
 // 判断数据是否存在
 let buylist=JSON.parse(window.localStorage.getItem('buylist'))||{};
@@ -202,8 +218,13 @@ router.beforeEach((to, from, next) => {
   }
 })
 // 注册一个全局过滤器
-Vue.filter('cutTime', function (value) {
-  return moment(value).format("YYYY-MM-DD");
+Vue.filter('cutTime', function (value,format) {
+  if(format){
+    return moment(value).format(format);
+  }else{
+    return moment(value).format("YYYY-MM-DD");
+
+  }
 });
 
 
